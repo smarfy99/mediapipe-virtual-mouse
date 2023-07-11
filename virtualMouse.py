@@ -6,9 +6,7 @@ import time
 from math import sqrt
 import win32api
 import pyautogui
- 
- 
- 
+
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
 click=0
