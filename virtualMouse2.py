@@ -7,6 +7,7 @@ hand_detector = mp.solutions.hands.Hands()
 # hand의 landmark를 연결해서 시각화
 drawing_utils = mp.solutions.drawing_utils
 screen_width, screen_height = pyautogui.size()
+index_y = 0
 
 # cv2 라이브러리를 활용해 웹캠 불러오기
 while True:
@@ -28,13 +29,22 @@ while True:
                 # hand landmark
                 x = int(landmark.x * frame_width)
                 y = int(landmark.y * frame_height)
-                print(x,y)
+                
+                # 검지
                 if id == 8:
                     cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
+                    # 전체 화면 크기 비례한 마우스 위치 이동
                     index_x = screen_width / frame_width * x
                     index_y = screen_height / frame_height * y
                     pyautogui.moveTo(index_x, index_y)
-                    
+                # 엄지 
+                if id == 4:
+                    cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
+                    thumb_x = screen_width / frame_width * x
+                    thumb_y = screen_height / frame_height * y
+                    print('outside', abs(index_y - thumb_y))
+                    if abs(index_y - thumb_y) < 40:
+                        print('click')
     cv2.imshow('Virtual Mouse', frame)
     cv2.waitKey(1)
     
