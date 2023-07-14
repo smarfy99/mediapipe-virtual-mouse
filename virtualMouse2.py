@@ -2,8 +2,10 @@ import cv2
 import mediapipe as mp
 import pyautogui
 
+# my own video and webcam setting
 cap = cv2.VideoCapture(0)
 hand_detector = mp.solutions.hands.Hands()
+
 # hand의 landmark를 연결해서 시각화
 drawing_utils = mp.solutions.drawing_utils
 screen_width, screen_height = pyautogui.size()
