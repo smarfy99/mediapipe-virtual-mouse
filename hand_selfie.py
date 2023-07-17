@@ -1,5 +1,20 @@
 import cv2
 import mediapipe as mp
+
+# firebase
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import storage
+
+# firebase 인증 정보 초기화
+# firebase 서비스 계정 키(json파일)의 경로를 지정
+cred = credentials.Certificate("mediapipe-virtual-mouse/firebase-service-account.json")
+# firebase storage 버킷 이름으로 대체
+firebase_admin.initialize_app(cred, {
+    'storageBucket': 'mwm-mozi.appspot.com'
+})
+bucket = storage.bucket()
+
 cap = cv2.VideoCapture(0) # Replace with your own video and webcam
 
 mpHands = mp.solutions.hands
@@ -86,6 +101,13 @@ while True:
         
     elif Take_photo==1:
         cv2.imwrite("photo.jpg", img)
+        
+        # firebase storage에 이미지 업로드
+        # 저장할 파일 경로와 이름을 지정
+        blob = bucket.blob("images/photo.jpg")
+        # 로컬파일을 firebase storage에 업로드
+        blob.upload_from_filename("photo.jpg")
+        
         Take_photo=0
     
     cv2.imshow("Image", img)
@@ -97,7 +119,7 @@ cap.release()
 cv2.destroyAllWindows()
 
 # Show the selfie
-img = cv2.imread('photo.jpg')
-cv2.imshow('Selfie', img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# img = cv2.imread('photo.jpg')
+# cv2.imshow('Selfie', img)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
