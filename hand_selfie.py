@@ -1,5 +1,6 @@
 import cv2
 import mediapipe as mp
+import pyautogui
 
 # firebase
 import firebase_admin
@@ -15,28 +16,40 @@ firebase_admin.initialize_app(cred, {
 })
 bucket = storage.bucket()
 
+# my own video and webcam setting
 cap = cv2.VideoCapture(0) # Replace with your own video and webcam
+# mpHands = mp.solutions.hands
+# hands = mpHands.Hands() 
+hand_detector = mp.solutions.hands.Hands()
 
-mpHands = mp.solutions.hands
-hands = mpHands.Hands() 
+# hand의 landmark를 연결해서 시각화
+drawing_utils = mp.solutions.drawing_utils
+screen_width, screen_height = pyautogui.size()
+index_y = 0
 
 def coordinate(id, h, w):
     cx, cy = lm.x*w, lm.y*h
-    cv2.circle(img, (int(cx), int(cy)), 1, (255,255,255), cv2.FILLED)  
+    cv2.circle(frame, (int(cx), int(cy)), 1, (255,255,255), cv2.FILLED)  
     return cx, cy
 
 Take_photo=0
 
 while True:
-    success, img = cap.read()
+    success, frame = cap.read()
+    
+    # 0는 x축, 1은 y축으로 flip
+    frame = cv2.flip(frame, 1)
+    frame_height, frame_width, _ = frame.shape
     
     if not success: 
         break
     
-    imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    results = hands.process(imgRGB)
+    # opencv는 BGR 형식(Blue Green Red)에서 작동하지만 mediapipe는 RGB(Red Green Blue) 형식에서 작동하기 때문에 이미지를 처리하기 전에 이미지 형식을 변경
+    frameRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    results = hand_detector.process(frameRGB)
+    hands = results.multi_hand_landmarks
 
-    h, w, c = img.shape
+    h, w, c = frame.shape
     handsup=0
     thumbs_correct=0
     fingers_correct=0
@@ -92,15 +105,15 @@ while True:
 
     if Take_photo>1:
         if Take_photo>=90:
-            cv2.putText(img, '3', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 3)        
+            cv2.putText(frame, '3', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 3)        
         elif Take_photo>=60:
-            cv2.putText(img, '2', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 3)
+            cv2.putText(frame, '2', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 3)
         elif Take_photo>=30:
-            cv2.putText(img, '1', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 3)
+            cv2.putText(frame, '1', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 3)
         Take_photo-=1
         
     elif Take_photo==1:
-        cv2.imwrite("photo.jpg", img)
+        cv2.imwrite("photo.jpg", frame)
         
         # firebase storage에 이미지 업로드
         # 저장할 파일 경로와 이름을 지정
@@ -110,9 +123,36 @@ while True:
         
         Take_photo=0
     
-    cv2.imshow("Image", img)
+    if hands:
+        for hand in hands:
+            drawing_utils.draw_landmarks(frame, hand)
+            landmarks = hand.landmark
+            for id, landmark in enumerate(landmarks):
+                # hand landmark
+                x = int(landmark.x * frame_width)
+                y = int(landmark.y * frame_height)
+                
+                # 검지
+                if id == 8:
+                    cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
+                    # 전체 화면 크기 비례한 마우스 위치 이동
+                    index_x = screen_width / frame_width * x
+                    index_y = screen_height / frame_height * y
+                    pyautogui.moveTo(index_x, index_y)
+                # 엄지 
+                if id == 4:
+                    cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
+                    thumb_x = screen_width / frame_width * x
+                    thumb_y = screen_height / frame_height * y
+                    print('outside', abs(index_y - thumb_y))
+                    if abs(index_y - thumb_y) < 40:
+                        pyautogui.click()
+                        pyautogui.sleep(1)
+    # cv2.imshow('Virtual Mouse', frame)
+    # cv2.waitKey(1)
+    cv2.imshow("Image", frame)
     
-    if cv2.waitKey(10) & 0xFF==ord('q'):
+    if cv2.waitKey(5) & 0xFF==ord('q'):
         break  
         
 cap.release()
