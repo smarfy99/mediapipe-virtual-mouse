@@ -18,8 +18,6 @@ bucket = storage.bucket()
 
 # my own video and webcam setting
 cap = cv2.VideoCapture(0) # Replace with your own video and webcam
-# mpHands = mp.solutions.hands
-# hands = mpHands.Hands() 
 hand_detector = mp.solutions.hands.Hands()
 
 # hand의 landmark를 연결해서 시각화
@@ -47,16 +45,43 @@ while True:
     # opencv는 BGR 형식(Blue Green Red)에서 작동하지만 mediapipe는 RGB(Red Green Blue) 형식에서 작동하기 때문에 이미지를 처리하기 전에 이미지 형식을 변경
     frameRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = hand_detector.process(frameRGB)
+    # hand landmark의 좌표 추출
     hands = results.multi_hand_landmarks
 
     h, w, c = frame.shape
     handsup=0
     thumbs_correct=0
     fingers_correct=0
-    
+    if hands:
+        for hand in hands:
+            drawing_utils.draw_landmarks(frame, hand)
+            landmarks = hand.landmark
+            for id, landmark in enumerate(landmarks):
+                # hand landmark
+                x = int(landmark.x * frame_width)
+                y = int(landmark.y * frame_height)
+                
+                # 검지
+                if id == 8:
+                    cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
+                    # 전체 화면 크기 비례한 마우스 위치 이동
+                    index_x = screen_width / frame_width * x
+                    index_y = screen_height / frame_height * y
+                    pyautogui.moveTo(index_x, index_y)
+                # 엄지 
+                if id == 4:
+                    cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
+                    thumb_x = screen_width / frame_width * x
+                    thumb_y = screen_height / frame_height * y
+                    print('outside', abs(index_y - thumb_y))
+                    if abs(index_y - thumb_y) < 40:
+                        pyautogui.click()
+                        pyautogui.sleep(1)
+                    
     if results.multi_hand_landmarks:
         for handLms in results.multi_hand_landmarks:
             for id, lm in enumerate(handLms.landmark):
+                cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
                 if id == 0: 
                     __, cy_0 = coordinate(0, h, w)
                 if id == 10: 
@@ -123,31 +148,6 @@ while True:
         
         Take_photo=0
     
-    if hands:
-        for hand in hands:
-            drawing_utils.draw_landmarks(frame, hand)
-            landmarks = hand.landmark
-            for id, landmark in enumerate(landmarks):
-                # hand landmark
-                x = int(landmark.x * frame_width)
-                y = int(landmark.y * frame_height)
-                
-                # 검지
-                if id == 8:
-                    cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
-                    # 전체 화면 크기 비례한 마우스 위치 이동
-                    index_x = screen_width / frame_width * x
-                    index_y = screen_height / frame_height * y
-                    pyautogui.moveTo(index_x, index_y)
-                # 엄지 
-                if id == 4:
-                    cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
-                    thumb_x = screen_width / frame_width * x
-                    thumb_y = screen_height / frame_height * y
-                    print('outside', abs(index_y - thumb_y))
-                    if abs(index_y - thumb_y) < 40:
-                        pyautogui.click()
-                        pyautogui.sleep(1)
     # cv2.imshow('Virtual Mouse', frame)
     # cv2.waitKey(1)
     cv2.imshow("Image", frame)
