@@ -26,11 +26,13 @@ screen_width, screen_height = pyautogui.size()
 index_y = 0
 
 def coordinate(id, h, w):
-    cx, cy = lm.x*w, lm.y*h
+    cx, cy = landmark.x*w, landmark.y*h
     cv2.circle(frame, (int(cx), int(cy)), 1, (255,255,255), cv2.FILLED)  
     return cx, cy
 
 Take_photo=0
+# 사진 카운터 초기화
+photo_counter = 1
 
 while True:
     success, frame = cap.read()
@@ -49,9 +51,11 @@ while True:
     hands = results.multi_hand_landmarks
 
     h, w, c = frame.shape
+    # 주먹쥐기
     handsup=0
     thumbs_correct=0
     fingers_correct=0
+    
     if hands:
         for hand in hands:
             drawing_utils.draw_landmarks(frame, hand)
@@ -73,15 +77,11 @@ while True:
                     cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
                     thumb_x = screen_width / frame_width * x
                     thumb_y = screen_height / frame_height * y
-                    print('outside', abs(index_y - thumb_y))
+                    # print('outside', abs(index_y - thumb_y))
                     if abs(index_y - thumb_y) < 40:
                         pyautogui.click()
                         pyautogui.sleep(1)
-                    
-    if results.multi_hand_landmarks:
-        for handLms in results.multi_hand_landmarks:
-            for id, lm in enumerate(handLms.landmark):
-                cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
+                       
                 if id == 0: 
                     __, cy_0 = coordinate(0, h, w)
                 if id == 10: 
@@ -110,6 +110,7 @@ while True:
                 if id == 20: 
                     __, cy_20 = coordinate(20, h, w)
             
+            # 주먹
             if cy_10 < cy_0:
                 handsup=1
             else:
@@ -127,7 +128,7 @@ while True:
             
             if handsup==1 and thumbs_correct==1 and fingers_correct==1 and Take_photo==0:
                 Take_photo=120
-
+                    
     if Take_photo>1:
         if Take_photo>=90:
             cv2.putText(frame, '3', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 3)        
@@ -138,13 +139,19 @@ while True:
         Take_photo-=1
         
     elif Take_photo==1:
-        cv2.imwrite("photo.jpg", frame)
+        # 사진 이름 생성
+        photo_name = f"photo{photo_counter}.jpg"
+        # 사진 저장
+        cv2.imwrite(photo_name, frame)
         
         # firebase storage에 이미지 업로드
         # 저장할 파일 경로와 이름을 지정
-        blob = bucket.blob("images/photo.jpg")
+        blob = bucket.blob(f"images/{photo_name}")
         # 로컬파일을 firebase storage에 업로드
-        blob.upload_from_filename("photo.jpg")
+        blob.upload_from_filename(photo_name)
+        
+        # 사진 카운터 증가
+        photo_counter += 1
         
         Take_photo=0
     
