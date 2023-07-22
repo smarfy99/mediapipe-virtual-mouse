@@ -155,18 +155,12 @@ while True:
         
         Take_photo=0
     
-    # cv2.imshow('Virtual Mouse', frame)
-    # cv2.waitKey(1)
     cv2.imshow("Image", frame)
     
+    # OpenCV에서 사용자가 키보드의 입력을 대기하는 함수(밀리초 단위)
+    # 반드시 .imshow랑 같이 쓸 것
     if cv2.waitKey(5) & 0xFF==ord('q'):
         break  
         
 cap.release()
 cv2.destroyAllWindows()
-
-# Show the selfie
-# img = cv2.imread('photo.jpg')
-# cv2.imshow('Selfie', img)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
