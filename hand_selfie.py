@@ -1,8 +1,6 @@
 import cv2
 import mediapipe as mp
 import pyautogui
-import numpy as np
-from pathlib import Path
 
 # firebase config 정보 가져오기
 from firebase_config import bucket
