@@ -11,8 +11,8 @@ for image_name in image_names:
     image = cv2.imdecode(np.frombuffer(image_bytes, np.uint8), cv2.IMREAD_COLOR)
     images.append(image)
 
-# photoFrame 읽어오기
-photo_frame = cv2.imread('mediapipe-virtual-mouse/photoframe.png')
+# photoFrame 읽어오기 - 투명한 배경을 가진 png
+photo_frame = cv2.imread('mediapipe-virtual-mouse/photoframe.png', cv2.IMREAD_UNCHANGED)
 
 # 이미지 2개씩 2행으로 배열
 row1 = np.hstack((images[0], images[1]))
@@ -20,20 +20,26 @@ row2 = np.hstack((images[2], images[3]))
 merged_image = np.vstack((row1, row2))
 
 # 합성이미지에 photo_frame 얹기
-# photo_frame의 크기를 합성 이미지와 맞춤
-frame_height, frame_width, _ = photo_frame.shape
-merged_image_height, merged_image_width, _ = merged_image.shape
+resized_photo_frame = cv2.resize(photo_frame, (merged_image.shape[1], merged_image.shape[0]))
 
-# 합성 이미지의 중앙에 photo_frame 얹음
-y_offset = (merged_image_height - frame_height) // 2
-x_offset = (merged_image_width - frame_width) // 2
-merged_image[y_offset:y_offset + frame_height, x_offset:x_offset + frame_width] = photo_frame
+# 알파 채널 분리
+foreground_alpha = resized_photo_frame[:, :, 3]
+foreground_rgb = resized_photo_frame[:, :, :3]
 
-cv2.imshow('Show image', photo_frame)
+# 알파 채널을 3채널로 확장
+foreground_alpha_expanded = np.expand_dims(foreground_alpha, axis=2)
+foreground_alpha_expanded = np.repeat(foreground_alpha_expanded, 3, axis=2)
+
+# photo_frame과 합성이미지 합치기
+result = cv2.multiply(merged_image.astype(float), (1-(foreground_alpha_expanded / 255)))
+result += cv2.multiply(foreground_rgb.astype(float), (foreground_alpha_expanded / 255))
+result = result.astype(np.uint8)
+
+cv2.imshow('Show image', result)
 cv2.waitKey(0)
 # 합성한 콜라주를 로컬에 저장
 merged_image_name = "mergedImage.jpg"
-cv2.imwrite(merged_image_name, merged_image)
+cv2.imwrite(merged_image_name, result)
 blob = bucket.blob(f"images/{merged_image_name}")
 # 로컬파일을 firebase storage에 업로드
 blob.upload_from_filename(merged_image_name)
