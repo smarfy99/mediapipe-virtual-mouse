@@ -13,11 +13,20 @@ for image_name in image_names:
 
 # photoFrame 읽어오기
 photo_frame = cv2.imread('mediapipe-virtual-mouse/photoframe.png')
-# photoFrame과 사진 합성하기
-# cv2.imshow('Show image', photo_frame)
-cv2.waitKey(0)
-merged_image = photo_frame
 
+merged_image = photo_frame.copy()
+# photoFrame과 이미지 합성하기
+photo_width, photo_height = images[0].shpae[1], images[0].shape[0]
+
+# 콜라주 만들기 위해 사진 배치 - 4개 사진 가로 2개씩 2행
+row_1 = np.hstack((images[0], images[1]))
+row_2 = np.hstack((images[2], images[3]))
+merged_image[100:100+photo_height, 50:50+photo_width*2] = row_1
+merged_image[200:200+photo_height, 50:50+photo_width*2] = row_2
+
+cv2.imshow('Show image', photo_frame)
+cv2.waitKey(0)
+# 합성한 콜라주를 로컬에 저장
 merged_image_name = "mergedImage.jpg"
 cv2.imwrite(merged_image_name, merged_image)
 blob = bucket.blob(f"images/{merged_image_name}")

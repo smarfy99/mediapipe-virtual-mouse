@@ -19,7 +19,7 @@ index_y = 0
 
 def coordinate(id, h, w):
     cx, cy = landmark.x*w, landmark.y*h
-    cv2.circle(frame, (int(cx), int(cy)), 1, (255,255,255), cv2.FILLED)  
+    # cv2.circle(frame, (int(cx), int(cy)), 1, (255,255,255), cv2.FILLED)  
     return cx, cy
 
 Take_photo=0
@@ -149,7 +149,7 @@ while True:
         Take_photo=0
     
     # 프레임을 화면에 디스플레이
-    # cv2.imshow("Image", frame)
+    cv2.imshow("Image", frame)
     
     # OpenCV에서 사용자가 키보드의 입력을 대기하는 함수(밀리초 단위)
     # 반드시 .imshow랑 같이 쓸 것
