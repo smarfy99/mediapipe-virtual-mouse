@@ -8,6 +8,7 @@ from pathlib import Path
 from firebase_config import bucket
 
 # my own video and webcam setting
+# 어떤 웹캠으로 할건지(첫번째 0, 두번째 1)
 cap = cv2.VideoCapture(0) # Replace with your own video and webcam
 hand_detector = mp.solutions.hands.Hands()
 
@@ -26,6 +27,7 @@ Take_photo=0
 photo_counter = 1
 
 while True:
+    # 재생되는 비디오의 한 프레임씩 읽기
     success, frame = cap.read()
     
     # 0는 x축, 1은 y축으로 flip
@@ -146,12 +148,17 @@ while True:
         
         Take_photo=0
     
-    cv2.imshow("Image", frame)
+    # 프레임을 화면에 디스플레이
+    # cv2.imshow("Image", frame)
     
     # OpenCV에서 사용자가 키보드의 입력을 대기하는 함수(밀리초 단위)
     # 반드시 .imshow랑 같이 쓸 것
-    if cv2.waitKey(5) & 0xFF==ord('q'):
-        break  
+    # q 입력하면 탈출
+    key = cv2.waitKey(1)
+    if key == ord('q'):
+        break
+    # if cv2.waitKey(1) & 0xFF==ord('q'):
+    #     break  
         
-cap.release()
-cv2.destroyAllWindows()
+cap.release() # cap객체를 해제
+cv2.destroyAllWindows() # 생성된 윈도우 제거

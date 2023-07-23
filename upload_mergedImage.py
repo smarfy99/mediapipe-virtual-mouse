@@ -14,7 +14,7 @@ for image_name in image_names:
 # photoFrame 읽어오기
 photo_frame = cv2.imread('mediapipe-virtual-mouse/photoframe.png')
 # photoFrame과 사진 합성하기
-cv2.imshow('Show image', photo_frame)
+# cv2.imshow('Show image', photo_frame)
 cv2.waitKey(0)
 merged_image = photo_frame
 
