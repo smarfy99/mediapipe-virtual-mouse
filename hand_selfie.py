@@ -1,20 +1,11 @@
 import cv2
 import mediapipe as mp
 import pyautogui
+import numpy as np
+from pathlib import Path
 
-# firebase
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import storage
-
-# firebase 인증 정보 초기화
-# firebase 서비스 계정 키(json파일)의 경로를 지정
-cred = credentials.Certificate("mediapipe-virtual-mouse/firebase-service-account.json")
-# firebase storage 버킷 이름으로 대체
-firebase_admin.initialize_app(cred, {
-    'storageBucket': 'mwm-mozi.appspot.com'
-})
-bucket = storage.bucket()
+# firebase config 정보 가져오기
+from firebase_config import bucket
 
 # my own video and webcam setting
 cap = cv2.VideoCapture(0) # Replace with your own video and webcam
@@ -67,14 +58,14 @@ while True:
                 
                 # 검지
                 if id == 8:
-                    cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
+                    # cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
                     # 전체 화면 크기 비례한 마우스 위치 이동
                     index_x = screen_width / frame_width * x
                     index_y = screen_height / frame_height * y
                     pyautogui.moveTo(index_x, index_y)
                 # 엄지 
                 if id == 4:
-                    cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
+                    # cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
                     thumb_x = screen_width / frame_width * x
                     thumb_y = screen_height / frame_height * y
                     # print('outside', abs(index_y - thumb_y))
