@@ -14,15 +14,20 @@ for image_name in image_names:
 # photoFrame 읽어오기
 photo_frame = cv2.imread('mediapipe-virtual-mouse/photoframe.png')
 
-merged_image = photo_frame.copy()
-# photoFrame과 이미지 합성하기
-photo_width, photo_height = images[0].shpae[1], images[0].shape[0]
+# 이미지 2개씩 2행으로 배열
+row1 = np.hstack((images[0], images[1]))
+row2 = np.hstack((images[2], images[3]))
+merged_image = np.vstack((row1, row2))
 
-# 콜라주 만들기 위해 사진 배치 - 4개 사진 가로 2개씩 2행
-row_1 = np.hstack((images[0], images[1]))
-row_2 = np.hstack((images[2], images[3]))
-merged_image[100:100+photo_height, 50:50+photo_width*2] = row_1
-merged_image[200:200+photo_height, 50:50+photo_width*2] = row_2
+# 합성이미지에 photo_frame 얹기
+# photo_frame의 크기를 합성 이미지와 맞춤
+frame_height, frame_width, _ = photo_frame.shape
+merged_image_height, merged_image_width, _ = merged_image.shape
+
+# 합성 이미지의 중앙에 photo_frame 얹음
+y_offset = (merged_image_height - frame_height) // 2
+x_offset = (merged_image_width - frame_width) // 2
+merged_image[y_offset:y_offset + frame_height, x_offset:x_offset + frame_width] = photo_frame
 
 cv2.imshow('Show image', photo_frame)
 cv2.waitKey(0)

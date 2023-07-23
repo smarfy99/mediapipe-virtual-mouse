@@ -154,11 +154,11 @@ while True:
     # OpenCV에서 사용자가 키보드의 입력을 대기하는 함수(밀리초 단위)
     # 반드시 .imshow랑 같이 쓸 것
     # q 입력하면 탈출
-    key = cv2.waitKey(1)
-    if key == ord('q'):
-        break
-    # if cv2.waitKey(1) & 0xFF==ord('q'):
-    #     break  
+    # key = cv2.waitKey(1)
+    # if key == ord('q'):
+    #     break
+    if cv2.waitKey(1) & 0xFF==ord('q'):
+        break  
         
 cap.release() # cap객체를 해제
 cv2.destroyAllWindows() # 생성된 윈도우 제거
