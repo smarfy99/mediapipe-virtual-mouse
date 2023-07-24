@@ -1,5 +1,6 @@
 from firebase_config import bucket
 from hand_selfie import cv2, np
+import os
 
 # 이미지를 병합해서 firebase에 저장하기
 image_names = ["photo1.jpg", "photo2.jpg", "photo3.jpg", "photo4.jpg"]
@@ -35,17 +36,25 @@ result = cv2.multiply(merged_image.astype(float), (1-(foreground_alpha_expanded 
 result += cv2.multiply(foreground_rgb.astype(float), (foreground_alpha_expanded / 255))
 result = result.astype(np.uint8)
 
-cv2.imshow('Show image', result)
-cv2.waitKey(0)
 # 합성한 콜라주를 로컬에 저장
 merged_image_name = "mergedImage.jpg"
 cv2.imwrite(merged_image_name, result)
+
 blob = bucket.blob(f"images/{merged_image_name}")
 # 로컬파일을 firebase storage에 업로드
 blob.upload_from_filename(merged_image_name)
 
+# Firebase Storage에서 기존 이미지들 삭제
+for image_name in image_names:
+    bucket.blob(f"images/{image_name}").delete()
+
 # 메모리에서 이미지 삭제
 for image in images:
     image.release()
+
+# 로컬에 저장된 합성 이미지 파일 삭제
+os.remove(merged_image_name)
+
+
     
 cv2.destroyAllWindows()

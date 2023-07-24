@@ -152,4 +152,4 @@ while True:
         break  
         
 cap.release() # cap객체를 해제
-cv2.destroyAllWindows() # 생성된 윈도우 제거
+cv2.destroyAllWindows() #생성된 윈도우 제거
