@@ -108,18 +108,21 @@ while True:
             else:
                 figners_correct=0
             
+            # 주먹쥐기 판단
             if handsup==1 and thumbs_correct==1 and fingers_correct==1 and Take_photo==0:
-                Take_photo=120
+                Take_photo=150 #5초 / 1초 - 40
                 pyautogui.click()
                 pyautogui.sleep(1)
                     
-    if Take_photo>1:
-        if Take_photo>=90:
-            cv2.putText(frame, '3', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 3)        
+    if Take_photo>1: #타이머 동작 중
+        if Take_photo>=120:
+            cv2.putText(frame, '4', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 4)        
+        elif Take_photo>=90:
+            cv2.putText(frame, '3', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 4)
         elif Take_photo>=60:
-            cv2.putText(frame, '2', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 3)
+            cv2.putText(frame, '2', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 4)
         elif Take_photo>=30:
-            cv2.putText(frame, '1', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 3)
+            cv2.putText(frame, '1', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 4)
         Take_photo-=1
         
     elif Take_photo==1:
@@ -145,9 +148,6 @@ while True:
     # OpenCV에서 사용자가 키보드의 입력을 대기하는 함수(밀리초 단위)
     # 반드시 .imshow랑 같이 쓸 것
     # q 입력하면 탈출
-    # key = cv2.waitKey(1)
-    # if key == ord('q'):
-    #     break
     if cv2.waitKey(1) & 0xFF==ord('q'):
         break  
         
