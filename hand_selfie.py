@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 import pyautogui
+import numpy as np
 
 # firebase config 정보 가져오기
 from firebase_config import bucket
@@ -11,18 +12,18 @@ cap = cv2.VideoCapture(0) # Replace with your own video and webcam
 hand_detector = mp.solutions.hands.Hands()
 
 # hand의 landmark를 연결해서 시각화
-drawing_utils = mp.solutions.drawing_utils
+# drawing_utils = mp.solutions.drawing_utils
 screen_width, screen_height = pyautogui.size()
 index_y = 0
 
 def coordinate(id, h, w):
     cx, cy = landmark.x*w, landmark.y*h
-    # cv2.circle(frame, (int(cx), int(cy)), 1, (255,255,255), cv2.FILLED)  
     return cx, cy
 
 Take_photo=0
 # 사진 카운터 초기화
 photo_counter = 1
+
 
 while True:
     # 재생되는 비디오의 한 프레임씩 읽기
@@ -49,7 +50,7 @@ while True:
     
     if hands:
         for hand in hands:
-            drawing_utils.draw_landmarks(frame, hand)
+            # drawing_utils.draw_landmarks(frame, hand)
             landmarks = hand.landmark
             for id, landmark in enumerate(landmarks):
                 # hand landmark
@@ -58,7 +59,6 @@ while True:
                 
                 # 검지
                 if id == 8:
-                    # cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
                     # 전체 화면 크기 비례한 마우스 위치 이동
                     index_x = screen_width / frame_width * x
                     index_y = screen_height / frame_height * y

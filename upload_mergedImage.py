@@ -54,7 +54,5 @@ for image in images:
 
 # 로컬에 저장된 합성 이미지 파일 삭제
 os.remove(merged_image_name)
-
-
     
 cv2.destroyAllWindows()
