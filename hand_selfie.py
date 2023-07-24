@@ -63,16 +63,7 @@ while True:
                     index_x = screen_width / frame_width * x
                     index_y = screen_height / frame_height * y
                     pyautogui.moveTo(index_x, index_y)
-                # 엄지 
-                if id == 4:
-                    # cv2.circle(img=frame, center=(x,y), radius=10, color=(0,255,255))
-                    thumb_x = screen_width / frame_width * x
-                    thumb_y = screen_height / frame_height * y
-                    # print('outside', abs(index_y - thumb_y))
-                    if abs(index_y - thumb_y) < 40:
-                        pyautogui.click()
-                        pyautogui.sleep(1)
-                       
+
                 if id == 0: 
                     __, cy_0 = coordinate(0, h, w)
                 if id == 10: 
@@ -119,6 +110,8 @@ while True:
             
             if handsup==1 and thumbs_correct==1 and fingers_correct==1 and Take_photo==0:
                 Take_photo=120
+                pyautogui.click()
+                pyautogui.sleep(1)
                     
     if Take_photo>1:
         if Take_photo>=90:
