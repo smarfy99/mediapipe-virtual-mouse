@@ -3,7 +3,7 @@ from hand_selfie import cv2, np
 import os
 
 # 이미지를 병합해서 firebase에 저장하기
-image_names = ["photo1.jpg", "photo2.jpg", "photo3.jpg", "photo4.jpg"]
+image_names = ["photo2.jpg", "photo3.jpg", "photo4.jpg", "photo5.jpg"]
 images = []
 
 for image_name in image_names:
