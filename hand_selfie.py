@@ -24,7 +24,6 @@ Take_photo=0
 # 사진 카운터 초기화
 photo_counter = 1
 
-
 while True:
     # 재생되는 비디오의 한 프레임씩 읽기
     success, frame = cap.read()
