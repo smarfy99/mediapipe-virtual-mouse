@@ -109,21 +109,17 @@ while True:
             
             # 주먹쥐기 판단
             if handsup==1 and thumbs_correct==1 and fingers_correct==1 and Take_photo==0:
-                Take_photo=180 #6초 / 1초 - 30
+                Take_photo=120 #6초 / 1초 - 30
                 pyautogui.click()
                 pyautogui.sleep(1)
                     
     if Take_photo>1: #타이머 동작 중
-        if Take_photo>=150:
-            cv2.putText(frame, '5', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 5)        
-        elif Take_photo>=120:
-            cv2.putText(frame, '4', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 5)
-        elif Take_photo>=90:
-            cv2.putText(frame, '3', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 5)
+        if Take_photo>=90:
+            cv2.putText(frame, '3', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 3)        
         elif Take_photo>=60:
-            cv2.putText(frame, '2', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 5)
+            cv2.putText(frame, '2', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 3)
         elif Take_photo>=30:
-            cv2.putText(frame, '1', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 5)
+            cv2.putText(frame, '1', (int(w/2),int(h/2)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 3)
         Take_photo-=1
         
     elif Take_photo==1:
